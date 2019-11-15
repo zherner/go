@@ -1,12 +1,21 @@
 package main
 
 import (
-  "fmt"
-  "math/rand"
-  "time"
+	"fmt"
+	"math/rand"
+	"time"
 )
 
-const welcomeMsg = "Starting =_P|nky-Pra[t|{e_="
+const welcomeMsg = "Starting =_P|nky-Pra[t|{e_= \n\n"
+
+// checkUserInput
+func checkUserInput(strIn, strNeed string) {
+	if strIn == strNeed {
+		fmt.Println("Good job!")
+	} else {
+		fmt.Println("Whomp, whomp...")
+	}
+}
 
 func main() {
 	goodbyeMsg := "Goodbye! \n\n"
@@ -32,3 +41,4 @@ func main() {
 		}
 		checkUserInput(userInput, neededInput)
 	}
+}
