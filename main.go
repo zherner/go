@@ -6,39 +6,63 @@ import (
 	"time"
 )
 
-const welcomeMsg = "Starting =_P|nky-Pra[t|{e_= \n\n"
+const (
+	welcomeMsg = "Starting ++=_P|nky-Pra[t|{e_=++"
+	goodbyeMsg = "Goodbye!"
+)
 
-// checkUserInput
-func checkUserInput(strIn, strNeed string) {
+// checkUserInput checks user input returns true if strIn matches strNeed
+func checkUserInput(strIn, strNeed string) bool {
+	clearScreen()
 	if strIn == strNeed {
-		fmt.Println("Good job!")
-	} else {
-		fmt.Println("Whomp, whomp...")
+		fmt.Print("Good job!")
+		return true
 	}
+
+	fmt.Print("Whomp, whomp...")
+	return false
+}
+
+// score displays the user's correct attempts out of total turns
+func score(p, t int) {
+	fmt.Printf("(%d/%d)\n", p, t)
+}
+
+// clearScreen clears the screen
+func clearScreen() {
+	fmt.Print("\033[2J")
+}
+
+// moveTopLeftScreen moves the cursor to the top left position of the screen
+func moveTopLeftScreen() {
+	fmt.Print("\033[H")
 }
 
 func main() {
-	goodbyeMsg := "Goodbye! \n\n"
+
+	fmt.Printf("%q\n\n", welcomeMsg)
+
 	pinkyChars := []string{":", "{", "}", "\"", "=", "-", "|", "+", "'", "/", "_", "\\", "p", "P", "[", "]"}
 
-	//pick random element in slice
-	rand.Seed(time.Now().UnixNano())
-	rand.Intn(len(pinkyChars))
-
-	fmt.Printf(welcomeMsg)
-
 	var userInput string
-	//loop here
-	for userInput != "exit" {
+	points := 0
+
+	for turn := 1; userInput != "exit"; turn++ {
+		//pick random element in slice
+		rand.Seed(time.Now().UnixNano())
 		neededInput := pinkyChars[rand.Intn(len(pinkyChars))]
-		fmt.Println("Type the following:", neededInput)
+
+		fmt.Printf("Type the following: %s\n", neededInput)
 		var userInput = ""
 		fmt.Scan(&userInput)
 
 		if userInput == "exit" {
-			fmt.Printf(goodbyeMsg)
+			fmt.Printf("%s\n", goodbyeMsg)
 			break
 		}
-		checkUserInput(userInput, neededInput)
+		if checkUserInput(userInput, neededInput) {
+			points++
+		}
+		score(points, turn)
 	}
 }
