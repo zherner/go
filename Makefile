@@ -1,4 +1,7 @@
-build :
+.PHONY: pinky
+.DEFAULT_GOAL := pinky
+
+pinky :
 	go build -v ./...
 
 clean :
