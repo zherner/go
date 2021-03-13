@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/eiannone/keyboard"
 )
 
 const (
@@ -12,14 +14,16 @@ const (
 )
 
 // checkUserInput checks user input returns true if strIn matches strNeed
-func checkUserInput(strIn, strNeed string) bool {
+func checkUserInput(strIn, strNeed rune) bool {
 	clearScreen()
+	fmt.Println("++=_P|nky-Pra[t|{e_=++")
+	fmt.Printf("Press ESC to quit\n\n")
 	if strIn == strNeed {
-		fmt.Print("Good job!")
+		fmt.Println("Good job!")
 		return true
 	}
 
-	fmt.Print("Whomp, whomp...")
+	fmt.Println("Whomp, whomp...")
 	return false
 }
 
@@ -39,30 +43,46 @@ func moveTopLeftScreen() {
 }
 
 func main() {
-
+	// welcome message
 	fmt.Printf("%q\n\n", welcomeMsg)
-
-	pinkyChars := []string{":", "{", "}", "\"", "=", "-", "|", "+", "'", "/", "_", "\\", "p", "P", "[", "]"}
-
-	var userInput string
+	// initialize points
 	points := 0
 
-	for turn := 1; userInput != "exit"; turn++ {
-		//pick random element in slice
-		rand.Seed(time.Now().UnixNano())
-		neededInput := pinkyChars[rand.Intn(len(pinkyChars))]
-
-		fmt.Printf("Type the following: %s\n", neededInput)
-		var userInput = ""
-		fmt.Scan(&userInput)
-
-		if userInput == "exit" {
-			fmt.Printf("%s\n", goodbyeMsg)
-			break
-		}
-		if checkUserInput(userInput, neededInput) {
-			points++
-		}
-		score(points, turn)
+	if err := keyboard.Open(); err != nil {
+		panic(err)
 	}
+	defer func() {
+		_ = keyboard.Close()
+	}()
+
+	pinkyRunes := []rune{':', '{', '}', '"', '=', '-', '|', '+', '\'', '/', '_', '\\', 'p', 'P', '[', ']'}
+
+	fmt.Println("Press ESC to quit")
+	for turn := 1; ; turn++ {
+		// pick random element in slice
+		rand.Seed(time.Now().UnixNano())
+		neededInput := pinkyRunes[rand.Intn(len(pinkyRunes))]
+
+		fmt.Printf("Type the following: %s\n", string(neededInput))
+
+		// get input immediately
+		char, key, err := keyboard.GetKey()
+		if err != nil {
+			panic(err)
+		}
+
+		// handle input
+		switch {
+		// bail if ESC
+		case key == keyboard.KeyEsc:
+			fmt.Printf("%s\n", goodbyeMsg)
+			return
+		case checkUserInput(char, neededInput):
+			points++
+			score(points, turn)
+		default:
+			score(points, turn)
+		}
+	}
+
 }
