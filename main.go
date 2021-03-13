@@ -9,15 +9,23 @@ import (
 )
 
 const (
-	welcomeMsg = "Starting ++=_P|nky-Pra[t|{e_=++"
+	welcomeMsg = "++=_P|nky-Pra[t|{e_=++"
 	goodbyeMsg = "Goodbye!"
 )
 
-// checkUserInput checks user input returns true if strIn matches strNeed
+var (
+	// initialize points
+	points int = 0
+)
+
+// checkUserInput clears screen,
+// checks user input,
+// returns true if strIn matches strNeed
 func checkUserInput(strIn, strNeed rune) bool {
 	clearScreen()
-	fmt.Println("++=_P|nky-Pra[t|{e_=++")
-	fmt.Printf("Press ESC to quit\n\n")
+	moveTopLeftScreen()
+	fmt.Printf("%q\n\n", welcomeMsg)
+	fmt.Printf("Press ESC to quit\n")
 	if strIn == strNeed {
 		fmt.Println("Good job!")
 		return true
@@ -43,11 +51,18 @@ func moveTopLeftScreen() {
 }
 
 func main() {
-	// welcome message
-	fmt.Printf("%q\n\n", welcomeMsg)
-	// initialize points
-	points := 0
+	// init pinky keys as runes
+	pinkyRunes := []rune{':', '{', '}', '"', '=', '-', '|', '+', '\'', '/', '_', '\\', 'p', 'P', '[', ']'}
 
+	// clean screen
+	clearScreen()
+	moveTopLeftScreen()
+
+	// welcome
+	fmt.Printf("%q\n\n", welcomeMsg)
+	fmt.Println("Press ESC to quit")
+
+	// get keys
 	if err := keyboard.Open(); err != nil {
 		panic(err)
 	}
@@ -55,17 +70,14 @@ func main() {
 		_ = keyboard.Close()
 	}()
 
-	pinkyRunes := []rune{':', '{', '}', '"', '=', '-', '|', '+', '\'', '/', '_', '\\', 'p', 'P', '[', ']'}
-
-	fmt.Println("Press ESC to quit")
+	// start game loop, counting turns for score
 	for turn := 1; ; turn++ {
 		// pick random element in slice
 		rand.Seed(time.Now().UnixNano())
 		neededInput := pinkyRunes[rand.Intn(len(pinkyRunes))]
 
-		fmt.Printf("Type the following: %s\n", string(neededInput))
-
 		// get input immediately
+		fmt.Printf("Type the following: %s\n", string(neededInput))
 		char, key, err := keyboard.GetKey()
 		if err != nil {
 			panic(err)
